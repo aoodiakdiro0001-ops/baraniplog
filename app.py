@@ -25,7 +25,7 @@ import requests
 from flask import Flask, jsonify, redirect, request, Response
 
 # ---------------------------------------------------------------- config
-PORT = int(os.environ.get("IPLOG_PORT", "8090"))
+PORT = int(os.environ.get("IPLOG_PORT", os.environ.get("PORT", "8090")))
 REDIRECT_URL = os.environ.get("IPLOG_REDIRECT", "https://www.google.com")
 LOG_FILE = os.environ.get("IPLOG_FILE", os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs.jsonl"))
 GEO_TIMEOUT = 8

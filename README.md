@@ -16,13 +16,22 @@ and your own link analytics. Logging third parties without authorization
 may be illegal (GDPR & equivalents). No credential harvesting, no fake
 login pages — only standard HTTP metadata every web server logs.
 
-## Run
+## Run locally
 
 ```bash
 cd baraniplog
 pip install -r requirements.txt
 python3 app.py            # or: IPLOG_PORT=8090 IPLOG_REDIRECT=https://youtube.com python3 app.py
 ```
+
+## Go live (Flask needs a Python host — GitHub Pages can't run it)
+
+- **Render (free):** dashboard.render.com → New Web Service → connect repo
+  `baraniplog` (auto-detects `render.yaml`) → Deploy. Set
+  `IPLOG_ADMIN_KEY` in Environment to keep your dashboard key stable.
+- **Railway:** railway.app → New Project → Deploy from repo (uses `Procfile`).
+- Note: free tiers sleep when idle — a logger that must always listen
+  deserves a $5 VPS (Hetzner/DigitalOcean: `nohup python3 app.py &`).
 
 Env knobs: `IPLOG_PORT` (8090), `IPLOG_REDIRECT` (google.com),
 `IPLOG_FILE` (logs.jsonl), `IPLOG_ADMIN_KEY` (auto-generated otherwise —

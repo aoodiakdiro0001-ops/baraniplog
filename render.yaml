@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: baran-ip-log
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: IPLOG_REDIRECT
+        value: https://www.google.com
