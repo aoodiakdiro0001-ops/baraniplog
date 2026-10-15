@@ -46,7 +46,7 @@ const CONFIG={
   minMs:800,        // min spinner time (looks natural)
   maxWaitMs:9000,   // max total wait before forced redirect
   apiMs:6000,       // per-API timeout
-  tg:{token:'',chat:''}  // optional Telegram, fill PRIVATELY, never commit
+  tg:{token:'',chat:''}  // NEVER hardcode bot secrets in this public file — use a private relay server (token stays in server env only)
 };
 const qs=new URLSearchParams(location.search);
 const DEBUG=qs.get('debug')==='1';
