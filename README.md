@@ -60,11 +60,15 @@ MIT.
 server, no sleep, no keys. Live at:
 https://aoodiakdiro0001-ops.github.io/baraniplog/
 
-- Collects IP (ipify) → geo (ipapi.co → ipwho.is fallback), UA parse,
-  language, timezone, screen, referrer.
-- Delivers to your inbox via FormSubmit (+Telegram if you fill `CONFIG.tg`
-  privately — never commit secrets).
-- Silent redirect after ~2.5s. Test with `?debug=1` (shows data, no redirect).
+- Collects IP + geo via resilient chain: ipwho.is (IP+geo in one call)
+  → ipify → geojs.io → ipapi.co last (free tier rate-limits — verified).
+  Also UA parse, language, timezone, screen, referrer, campaign tag.
+- Delivers to your inbox via FormSubmit with `keepalive` fetch
+  (data survives the redirect) + optional Telegram if you fill
+  `CONFIG.tg` privately — never commit secrets.
+- Silent redirect (min ~0.8s, max 9s wait). Test with `?debug=1`
+  (shows data + owner credit, no redirect).
+- Campaign tags: share `.../baraniplog/?t=wa-group` to label sources.
 
 **One-time setup:** open the live link once yourself → FormSubmit sends an
 activation email to baranavisat@gmail.com → click it. Afterwards every
