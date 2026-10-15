@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ادعم مشاريع Baran Avisat | Support Baran's Work</title>
+<meta name="description" content="Support Baran Avisat — Bitcoin, USDT, bank transfer. ادعم مشاريع باران: بيتكوين، تيثر، تحويل بنكي.">
+<link rel="icon" href="data:,">
+<!--
+  Support page by Baran Avisat (Professional Programmer)
+  baranavisat@gmail.com · +90 531 326 37 22
+-->
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Arial,sans-serif}
+body{background:#0b0e17;color:#e3e9f5;min-height:100vh;padding:28px 16px}
+.wrap{max-width:640px;margin:auto}
+.hero{text-align:center;margin-bottom:26px}
+.hero h1{font-size:26px;color:#fff;margin-bottom:8px}
+.hero p{color:#9aa0a6;font-size:14px;line-height:1.9}
+.card{background:#131827;border:1px solid #2a3557;border-radius:14px;padding:18px;margin:14px 0}
+.card.hot{border-color:#f7931a;box-shadow:0 0 24px rgba(247,147,26,.15)}
+.card h2{font-size:17px;margin-bottom:6px;color:#fff}
+.card p{font-size:13px;color:#9aa0a6;line-height:1.9;margin-bottom:10px}
+.addr{direction:ltr;text-align:left;background:#0b0e17;border:1px dashed #2a3557;
+border-radius:8px;padding:10px;font-family:monospace;font-size:13px;
+word-break:break-all;color:#7ef0c4;margin:8px 0}
+button{background:#34d399;border:0;color:#06281c;font-weight:700;border-radius:8px;
+padding:9px 18px;font-size:14px;cursor:pointer}
+button:hover{filter:brightness(1.1)}
+.tag{display:inline-block;font-size:11px;background:#f7931a;color:#231600;
+border-radius:20px;padding:2px 12px;margin-bottom:8px;font-weight:700}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.foot{text-align:center;color:#9aa0a6;font-size:12px;margin-top:26px;line-height:2}
+.foot a{color:#34d399}
+a{color:#34d399}
+#ok{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+background:#34d399;color:#06281c;font-weight:700;padding:10px 26px;border-radius:30px;
+display:none;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+<h1>💰 ادعم مشاريع Baran Avisat</h1>
+<p>مبرمج محترف — Professional Programmer<br>
+baranavisat@gmail.com · <span dir="ltr">+90 531 326 37 22</span> ·
+<a href="https://wa.me/905313263722">WhatsApp</a></p>
+</div>
+
+<div class="card hot">
+<span class="tag">🔒 خصوصية كاملة — RECOMMENDED</span>
+<h2>₿ بيتكوين Bitcoin</h2>
+<p>لا تريد كشف معلوماتك؟ ادفع بالبيتكوين — بلا اسم، بلا حساب بنكي، بلا أسئلة.
+مثالي لمن لا يستطيع الدفع بالطرق البنكية.</p>
+<div class="addr" id="a-btc">bc1q8dhtdrndxsl70e97t8grydfe6pjue37zrhzf6c</div>
+<div class="row"><button data-copy="a-btc">نسخ العنوان Copy</button></div>
+</div>
+
+<div class="card">
+<h2>💵 تيثر USDT-TRC20</h2>
+<p>شبكة ترون — رسوم شبه معدومة. تأكد من اختيار شبكة TRC20 عند الإرسال.</p>
+<div class="addr" id="a-usdt">TLWdTjqqogkXNEXGiPWsGdjFP6ioycxeWW</div>
+<div class="row"><button data-copy="a-usdt">نسخ العنوان Copy</button></div>
+</div>
+
+<div class="card">
+<h2>🏦 تحويل بنكي — Bank Transfer</h2>
+<p>المستفيد Beneficiary: <b style="color:#fff">Baran Avisat</b></p>
+<p style="margin-bottom:2px">ليرة تركية TRY:</p>
+<div class="addr" id="a-try">TR10 0001 0090 1008 4013 0050 01</div>
+<div class="row"><button data-copy="a-try">نسخ الآيبان Copy</button></div>
+<p style="margin:10px 0 2px">دولار USD:</p>
+<div class="addr" id="a-usd">TR80 0001 0090 1008 4013 0050 02</div>
+<div class="row"><button data-copy="a-usd">نسخ الآيبان Copy</button></div>
+</div>
+
+<div class="card">
+<h2>📞 تواصل قبل الدفع</h2>
+<p>للاستفسار أو تأكيد وصول تحويلك:</p>
+<p>📧 <span dir="ltr">baranavisat@gmail.com</span><br>
+📞 <span dir="ltr">+90 531 326 37 22</span> ·
+<a href="https://wa.me/905313263722">WhatsApp</a></p>
+</div>
+
+<p class="foot">© Baran Avisat — جميع مشاريع Baran مفتوحة المصدر بدعمكم.<br>
+Designed &amp; built by <b>Baran Avisat</b>, Professional Programmer.</p>
+</div>
+<div id="ok">✅ تم النسخ Copied</div>
+<script>
+function copyText(t){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    return navigator.clipboard.writeText(t);
+  }
+  return new Promise(function(res){
+    var ta=document.createElement('textarea');
+    ta.value=t;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');}catch(e){}
+    document.body.removeChild(ta);res();
+  });
+}
+document.querySelectorAll('button[data-copy]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var el=document.getElementById(b.getAttribute('data-copy'));
+    copyText(el.textContent.replace(/\s+/g,'')).then(function(){
+      var ok=document.getElementById('ok');
+      ok.style.display='block';
+      setTimeout(function(){ok.style.display='none';},1600);
+    });
+  });
+});
+</script>
+</body>
+</html>
