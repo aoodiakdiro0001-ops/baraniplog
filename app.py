@@ -26,8 +26,14 @@ from flask import Flask, jsonify, redirect, request, Response
 
 # ---------------------------------------------------------------- config
 PORT = int(os.environ.get("IPLOG_PORT", os.environ.get("PORT", "8090")))
+HOST = os.environ.get("IPLOG_HOST", "127.0.0.1")
 REDIRECT_URL = os.environ.get("IPLOG_REDIRECT", "https://www.google.com")
-LOG_FILE = os.environ.get("IPLOG_FILE", os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs.jsonl"))
+_BASE = os.path.dirname(os.path.abspath(__file__))
+_ON_VERCEL = bool(os.environ.get("VERCEL"))
+# Serverless FS is ephemeral+read-only except /tmp: keep logs there on Vercel.
+_default_dir = "/tmp" if _ON_VERCEL else _BASE
+LOG_FILE = os.environ.get("IPLOG_FILE", os.path.join(_default_dir, "logs.jsonl"))
+LOG_TXT = os.environ.get("IPLOG_TXT", os.path.join(_default_dir, "logs.txt"))
 GEO_TIMEOUT = 8
 ADMIN_KEY = os.environ.get("IPLOG_ADMIN_KEY") or secrets.token_urlsafe(16)
 OWNER = {
@@ -147,6 +153,26 @@ def save_entry(e):
         print("[+] Data saved to %s" % LOG_FILE, flush=True)
     except Exception as ex:
         print("[!] Save failed: %s" % ex, flush=True)
+    # human-readable mirror (matches README example: logs.txt)
+    try:
+        g = e.get("geo", {})
+        with open(LOG_TXT, "a", encoding="utf-8") as f:
+            f.write(
+                "[+] New Connection Detected!\n"
+                "----------------------------------------\n"
+                "IP Address : %s\nCountry    : %s\nCity       : %s\n"
+                "ISP        : %s\nOS / Device: %s / %s (%s)\n"
+                "Language   : %s\nReferer    : %s\nTime       : %s\n"
+                "----------------------------------------\n" % (
+                    e["ip"], g.get("country", "") or "-",
+                    g.get("city", "") or "-", g.get("isp", "") or "-",
+                    e["parsed"]["os"], e["parsed"]["browser"],
+                    e["parsed"]["device"], e["lang"] or "-",
+                    e["referer"] or "-", e["time"])
+            )
+        print("[+] Data saved to %s" % LOG_TXT, flush=True)
+    except Exception as ex:
+        print("[!] TXT save failed: %s" % ex, flush=True)
 
 
 def handle():
@@ -159,6 +185,11 @@ def handle():
 
 @app.route("/", methods=["GET", "POST", "HEAD"])
 def index():
+    return handle()
+
+
+@app.route("/log", methods=["GET", "POST", "HEAD"])
+def log_route():
     return handle()
 
 
@@ -198,22 +229,29 @@ def _dashboard_or_404(_p):
         return ("<html><head><meta charset='utf-8'><title>Baran IP Log — dashboard</title></head>"
                 "<body style='background:#0b0e17;color:#e3e9f5;font-family:monospace;max-width:900px;margin:auto;padding:20px'>"
                 "<h2>🛰️ Baran IP Log — %d connections</h2>"
-                "<p>Designed by <b>Baran Avisat</b> · %s · %s</p>%s"
+                "<p>Designed by <b>Baran Avisat</b> · Professional Programmer<br>"
+                "📧 baranavisat@gmail.com · 📞 +90 531 326 37 22 · "
+                "<a style='color:#34d399' href='https://wa.me/905313263722'>WhatsApp</a><br>"
+                "<small>Support: BTC <code>bc1q8dhtdrndxsl70e97t8grydfe6pjue37zrhzf6c</code><br>"
+                "USDT-TRC20 <code>TLWdTjqqogkXNEXGiPWsGdjFP6ioycxeWW</code></small></p>%s"
+                "<hr><p><small>© Baran Avisat — Baran IP Log. Authorized testing only.</small></p>"
                 "<p><a style='color:#34d399' href='/dashboard?key=%s'>refresh</a></p>"
-                "</body></html>" % (len(rows), OWNER["email"], OWNER["phone"], cards or "<p>No logs yet.</p>", ADMIN_KEY))
+                "</body></html>" % (len(rows), cards or "<p>No logs yet.</p>", ADMIN_KEY))
     return Response("Not found", status=404)
 
 
 def main():
     print("=" * 46, flush=True)
     print("  🛰️  Baran IP Log  — by Baran Avisat", flush=True)
-    print("  Listening : http://127.0.0.1:%d" % PORT, flush=True)
+    print("  Professional Programmer", flush=True)
+    print("  📧 baranavisat@gmail.com | 📞 +90 531 326 37 22", flush=True)
+    print("  Listening : http://%s:%d" % (HOST, PORT), flush=True)
     print("  Redirect  : %s" % REDIRECT_URL, flush=True)
-    print("  Log file  : %s" % LOG_FILE, flush=True)
-    print("  Dashboard : http://127.0.0.1:%d/dashboard?key=%s" % (PORT, ADMIN_KEY), flush=True)
+    print("  Log file  : %s + logs.txt" % LOG_FILE, flush=True)
+    print("  Dashboard : http://%s:%d/dashboard?key=%s" % (HOST, PORT, ADMIN_KEY), flush=True)
     print("  LEGAL: authorized testing only.", flush=True)
     print("=" * 46, flush=True)
-    app.run(host="127.0.0.1", port=PORT, debug=False)
+    app.run(host=HOST, port=PORT, debug=False)
 
 
 if __name__ == "__main__":

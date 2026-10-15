@@ -24,7 +24,22 @@ pip install -r requirements.txt
 python3 app.py            # or: IPLOG_PORT=8090 IPLOG_REDIRECT=https://youtube.com python3 app.py
 ```
 
-## Go live (Flask needs a Python host — GitHub Pages can't run it)
+## Go live — Vercel (serverless, recommended)
+
+The repo is Vercel-ready: `api/index.py` exposes the Flask `app`,
+`vercel.json` routes everything to it.
+
+1. https://vercel.com → Add New Project → import `baraniplog` → Deploy.
+2. Dashboard → Settings → Environment Variables, add:
+   - `IPLOG_ADMIN_KEY` = a long random string (keeps `/dashboard?key=...` stable)
+   - `IPLOG_REDIRECT` = `https://www.google.com` (or YouTube etc.)
+3. Redeploy. Your logger is live at `https://<project>.vercel.app`.
+
+⚠️ Serverless filesystem is ephemeral: logs live in `/tmp` (per instance)
+— the dashboard shows recent hits, but for permanent records wire a
+private relay/Telegram (`BARAN_TG_*` stays in Vercel env, never in code).
+
+## Go live — other Python hosts (Flask needs a Python host — GitHub Pages can't run it)
 
 - **Render (free):** dashboard.render.com → New Web Service → connect repo
   `baraniplog` (auto-detects `render.yaml`) → Deploy. Set
